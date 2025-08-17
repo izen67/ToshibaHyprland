@@ -8,9 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
      ./hardware-configuration.nix
-     inputs.home-manager.nixosModules.default
      ./modules/apps.nix
-     ./modules/kde.nix
      ./modules/gaming.nix
      ./modules/locale.nix
      ./modules/mounts.nix
@@ -18,6 +16,7 @@
      ./modules/sound.nix
      ./modules/system.nix
      ./modules/users.nix
+     ./modules/hyprland.nix
     ];
 
   # Allow unfree packages
