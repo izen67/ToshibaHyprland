@@ -1,10 +1,34 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "toshiba";
   home.homeDirectory = "/home/toshiba";
+
+  imports = [
+    inputs.illogical-impulse.homeManagerModules.default
+  ];
+
+  illogical-impulse = {
+  enable = true;
+
+  hyprland = {
+    # Use the customized Hyprland build provided by the dots
+    package = hypr.hyprland;
+    xdgPortalPackage = hypr.xdg-desktop-portal-hyprland;
+
+    ozoneWayland.enable = true;
+  };
+
+  dotfiles = {
+    fish.enable = true;
+    kitty.enable = true;
+  };
+ };
+
+# Make sure Fish is actually enabled at HM level too (safe to keep even if the module also does it)
+programs.fish.enable = true;
 
 
   # This value determines the Home Manager release that your configuration is
