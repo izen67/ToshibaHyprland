@@ -7,6 +7,7 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     # end-4 dots for NixOS (QuickShell variant)
     illogical-impulse = {
       url = "github:xBLACKICEx/end-4-dots-hyprland-nixos";
@@ -14,16 +15,31 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, illogical-impulse, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, illogical-impulse, ... }@inputs:
+  let
+    system = "x86_64-linux";
+  in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      # make `inputs` visible inside all modules
+      inherit system;
+
+      # make `inputs` visible inside modules and pass the dots flake into Home Manager
       specialArgs = { inherit inputs; };
 
       modules = [
         ./configuration.nix
 
-        # Home-Manager as a NixOS module (import it here, not again in configuration.nix)
-        home-manager.nixosModules.default
+        # Home Manager NixOS module + per-user HM configuration
+        home-manager.nixosModules.home-manager
+        {
+          # allow user packages and set your user's home.nix
+          home-manager.useUserPackages = true;
+          home-manager.users.toshiba = import ./home.nix;
+
+          # CRITICAL: pass the top-level flake inputs into HM so imports like
+          # `inputs.illogical-impulse.homeManagerModules.default` and export sets
+          # such as `hypr` become available inside home.nix
+          home-manager.extraSpecialArgs = { inputs = inputs; };
+        }
       ];
     };
   };
